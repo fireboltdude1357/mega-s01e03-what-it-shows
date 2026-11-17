@@ -9,7 +9,9 @@
   let { ticket }: { ticket: number } = $props();
 
   const split = $derived(splitTicket(reports as Report[], ticket, tenantOf, notes.oneDayMove));
-  const issue = (p: Problem) => (filed.tickets as Record<string, number | undefined>)[p];
+  type Filed = { issue: number; outcome: string; by: string };
+  const filedFor = (p: Problem): Filed | undefined => (filed.tickets as Record<string, Filed | undefined>)[p];
+  const count = (p: Problem) => split.groups.find((g) => g.problem === p)?.reports.length ?? 0;
   const tags = (t: Record<string, number>) =>
     Object.entries(t)
       .sort((a, b) => b[1] - a[1])
@@ -24,7 +26,7 @@
 
 <table>
   <thead>
-    <tr><th>problem</th><th>reports</th><th>intake tagged them</th><th>tenants</th><th>seen</th><th>ticket</th></tr>
+    <tr><th>problem</th><th>reports</th><th>intake tagged them</th><th>tenants</th><th>seen</th><th>ticket</th><th>outcome</th></tr>
   </thead>
   <tbody>
     {#each split.groups as g (g.problem)}
@@ -34,20 +36,32 @@
         <td class="tags">{tags(g.taggedAs)}</td>
         <td>{g.tenants}</td>
         <td>{g.firstSeen} → {g.lastSeen}</td>
-        <td>
-          {#if issue(g.problem)}
-            <a href="{filed.repo}/issues/{issue(g.problem)}">#{issue(g.problem)}</a>
-          {:else}
-            <span class="none">no ticket yet</span>
-          {/if}
-        </td>
+        {#if filedFor(g.problem)}
+          {@const f = filedFor(g.problem)!}
+          <td><a href="{filed.repo}/issues/{f.issue}">#{f.issue}</a></td>
+          <td class="outcome {f.outcome.replace(/\W+/g, '-')}"><b>{f.outcome}</b><br /><span class="by">{f.by}</span></td>
+        {:else}
+          <td><span class="none">no ticket yet</span></td>
+          <td></td>
+        {/if}
       </tr>
     {/each}
   </tbody>
 </table>
 
+{#if count('one-day') && count('parser')}
+  <p class="note">
+    The #4471 table files the <code>one-day</code> reports under <code>parser</code> by tenant. Counted that way,
+    <code>parser</code> holds {count('parser') + count('one-day')}.
+  </p>
+{/if}
+
 <style>
   .sum { font-size: 1.1rem; }
   .tags { color: var(--muted); font-size: 0.85em; }
   .none { color: var(--warn); font-weight: 600; }
+  .note { color: var(--muted); font-size: 0.85em; }
+  .by { color: var(--muted); font-size: 0.85em; }
+  .outcome.fixed b { color: var(--accent); }
+  .outcome.won-t-fix b, .outcome.no-fix b { color: var(--warn); }
 </style>

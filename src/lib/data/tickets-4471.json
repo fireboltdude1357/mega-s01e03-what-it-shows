@@ -1,4 +1,9 @@
 {
   "repo": "https://github.com/fireboltdude1357/mega-s01e03-what-it-shows",
-  "tickets": { "parser": 1, "hint": 2, "one-day": 3 }
+  "closed": "2026-10-05",
+  "tickets": {
+    "parser": { "issue": 1, "outcome": "fixed", "by": "fix(dates): parse dd/mm for eu locales" },
+    "hint": { "issue": 2, "outcome": "won't fix", "by": "booking-v3 form retired" },
+    "one-day": { "issue": 3, "outcome": "no fix", "by": "not in the engineering update" }
+  }
 }
