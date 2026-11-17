@@ -48,4 +48,4 @@ The page is `src/routes/kb/incidents/4471/split/+page.svx`. Its counts come from
 `src/lib/kb/problems.ts` at build time. The desk sees it at
 <https://fireboltdude1357.github.io/mega-s01e03-what-it-shows/kb/incidents/4471/split/>.
 
-To build: `pnpm install && pnpm build` (output in `build/`). `scripts/publish.sh` builds for GitHub Pages.
+The rendered page is committed at `build/kb/incidents/4471/split/index.html`, the same file GitHub Pages serves. To rebuild: `pnpm install && pnpm build` (output in `build/`). `scripts/publish.sh` builds for GitHub Pages.
