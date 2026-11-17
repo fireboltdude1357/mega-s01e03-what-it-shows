@@ -1,0 +1,56 @@
+---
+layout: runbook
+title: '#4471 split · three problems, three tickets'
+owner: support desk
+status: open
+reviewed: 2026-11-17
+signature: v1.eyJzdWIiOiI0ODQwIiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYXQiOjE3OTQ5NDcxNDYsImV4cCI6MTc5NTAzMzU0Nn0.LYEq-VCPi3ioV3mtjsozONGRIXFphuTbXu-wKllC5kI
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+</script>
+
+The [#4471 page](/kb/incidents/4471) calls every report in it one issue with one fix queued.
+The reports describe three different bugs. Each one now has its own ticket, and the parser fix
+closes only one of them.
+
+<Callout kind="warn">
+#4471 is not one issue. Fixing the parser leaves the booking-v3 hint and the one-day move open.
+</Callout>
+
+## The problems
+
+<ProblemTable ticket={4471} />
+
+## What each one is
+
+**`parser`.** The shared parser reads every date month first, and every tenant in #4471 writes
+the day first. 2 March comes out as 3 February. Fix it in the parser: read dates in the tenant's
+order.
+
+**`hint`.** The booking-v3 form prints `MM/DD/YYYY` under its date field. People at day-first
+tenants type what the hint says, month first, and the form reads it day first. Only form reports
+from booking-v3 tenants land here. The parser fix does not touch this. The hint has to match the
+tenant's order.
+
+**`one-day`.** Some bookings move by one day and keep their month. A day and month swap cannot do
+that. One meeting showed as Tuesday in Lisbon and Monday in Toronto, and one invite arrived
+before its booking. That points at time zone conversion. The desk had already noted these
+reports in `desk-notes.json`, but the #4471 table still counts them under `parser`.
+
+## How the count works
+
+- The export pages overlap, so some reports come twice. Count each id once.
+- Place a report by its tenant: locale and booking form (`locales.ts`, `causes.ts`). Do not use
+  the intake tag. Intake guesses it from the reporter's browser, so every en-US browser got
+  `hint`, whatever the tenant runs.
+- Read the body before you merge. A one-day move and a month flip share subject lines, so
+  matching on subject ([decision 0001](/kb/decisions/0001-dedupe-by-subject)) put them together.
+
+The table above runs on the export at build time. When the desk merges more reports into
+#4471, the counts here follow.
+
+<RenderStamp {signature} />

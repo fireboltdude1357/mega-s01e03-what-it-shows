@@ -34,3 +34,18 @@ Support desk. Decision records: whoever signed them.
 ---
 
 Exported 2026-10-04 from the `support` repo, `apps/kb/` → `src/`.
+
+## #4471, split
+
+#4471 merged every date report into one ticket. It holds three problems, each with its own
+ticket in this repo:
+
+- [#1](https://github.com/fireboltdude1357/mega-s01e03-what-it-shows/issues/1) `parser`: the shared parser reads day-first dates month first.
+- [#2](https://github.com/fireboltdude1357/mega-s01e03-what-it-shows/issues/2) `hint`: the booking-v3 form tells day-first tenants to type `MM/DD/YYYY`.
+- [#3](https://github.com/fireboltdude1357/mega-s01e03-what-it-shows/issues/3) `one-day`: bookings move by one day, likely a time zone conversion.
+
+The page is `src/routes/kb/incidents/4471/split/+page.svx`. Its counts come from
+`src/lib/kb/problems.ts` at build time. The desk sees it at
+<https://fireboltdude1357.github.io/mega-s01e03-what-it-shows/kb/incidents/4471/split/>.
+
+To build: `pnpm install && pnpm build` (output in `build/`). `scripts/publish.sh` builds for GitHub Pages.
